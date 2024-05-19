@@ -12,6 +12,6 @@
     "vite": "^4.0.0"
   },
   "dependencies": {
-    "@imndzy/axino": "^1.0.2"
+    "@imndzy/axino": "^1.0.3"
   }
 }

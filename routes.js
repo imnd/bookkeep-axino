@@ -28,7 +28,7 @@ const routes = {};
 
 for (let [path, controller] of Object.entries(pathsToControllers)) {
   routes[`get:${path}`] = [controller, 'index'];
-  routes[`post:${path}/create`] = [controller, 'create'];
+  routes[`post:${path}`] = [controller, 'create'];
   routes[`get:${path}/{id}`] = [controller, 'show'];
   routes[`post:${path}/{id}`] = [controller, 'update'];
   routes[`delete:${path}/{id}`] = [controller, 'destroy'];
