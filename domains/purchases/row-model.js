@@ -1,30 +1,5 @@
-import { Sequelize, DataTypes } from "@imndzy/axino/core/sequelize.js";
+import Model from "@imndzy/axino/core/db/model.js";
 
-let RowModel = Sequelize.define(
-  'purchases_rows',
-  {
-    purchase_id: {
-      type: DataTypes.MEDIUMINT,
-      allowNull: false,
-    },
-    article_subcategory_id: {
-      type: DataTypes.SMALLINT,
-      allowNull: false,
-    },
-    quantity: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-  }, {
-    timestamps: false
-  }
-);
-
-import mix from "@imndzy/axino/components/model-mixin.js";
-mix(RowModel);
-
-export default RowModel;
+export default class PurchasesRows extends Model {
+  parentKey = 'purchase_id';
+}

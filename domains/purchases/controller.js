@@ -5,6 +5,6 @@ import Dto from "./dto.js";
 
 export default class Controller extends ControllerWithRows {
   constructor () {
-    super(Model, RowModel, new Dto);
+    super(Model, RowModel, Dto);
   }
 }

@@ -1,8 +1,7 @@
 export default class ControllerWithRows {
-  model
-  rowModel
-  dto
-  dtos = []
+  model;
+  rowModel;
+  dto;
 
   constructor (model, rowModel, dto) {
     this.model = model;
@@ -15,14 +14,30 @@ export default class ControllerWithRows {
    */
   async index() {
     const models = await this.model.findAll();
+    const DTOs = [];
     for (let model of models) {
-      const dto = Object.assign(Object.create(Object.getPrototypeOf(this.dto)), this.dto)
-      dto.setData(model);
-      dto.setRows(await this.#findRows(model.id));
-      this.dtos.push(dto);
+      const rows = await this.#findRows(model.id);
+
+      DTOs.push(
+        (new this.dto)
+          .setData(model)
+          .setRows(rows)
+      );
     }
 
-    return this.dtos;
+    return DTOs;
+  }
+
+  /**
+   * Get item by ID
+   */
+  async show(id) {
+    const model = await this.model.findOrFail(id);
+    const rows = await this.#findRows(id);
+
+    return (new this.dto)
+      .setData(model)
+      .setRows(rows);
   }
 
   /**
@@ -30,25 +45,11 @@ export default class ControllerWithRows {
    */
   async create(data) {
     const model = await this.model.create(data);
-    const rows = this.#createRows(data);
+    const rows = await this.#createRows(data);
 
-    this.dto.setData(model);
-    this.dto.setRows(rows);
-
-    return this.dto;
-  }
-
-  /**
-   * Get item by ID
-   */
-  async show(id) {
-    const model = await this.model.showOrFail(id);
-    const rows = await this.#findRows(id);
-
-    this.dto.setData(model);
-    this.dto.setRows(rows);
-
-    return this.dto;
+    return (new this.dto)
+      .setData(model)
+      .setRows(rows);
   }
 
   /**
@@ -60,12 +61,11 @@ export default class ControllerWithRows {
 
     await this.#deleteRows(id);
 
-    const rows = this.#createRows(data);
+    const rows = await this.#createRows(data);
 
-    this.dto.setData(model);
-    this.dto.setRows(rows);
-
-    return this.dto;
+    return (new this.dto)
+      .setData(model)
+      .setRows(rows);
   }
 
   /**
@@ -78,16 +78,14 @@ export default class ControllerWithRows {
 
   async #findRows(id) {
     return await this.rowModel.findAll({
-      where: {
-        [this.rowModel.parentKey]: id,
-      },
+        [(new this.rowModel).parentKey]: id,
     });
   }
 
   async #createRows(data) {
     const rows = [];
     for (let row of data.rows) {
-      row[this.rowModel.parentKey] = id;
+      row[(new this.rowModel).parentKey] = id;
       rows.push(await this.rowModel.create(row))
     }
 
@@ -97,7 +95,7 @@ export default class ControllerWithRows {
   async #deleteRows(id) {
     await this.rowModel.delete({
       where: {
-        [this.rowModel.parentKey]: id,
+        [(new this.rowModel).parentKey]: id,
       },
     });
   }

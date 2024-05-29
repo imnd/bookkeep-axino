@@ -1,18 +1,10 @@
-export default class Dto {
-  id
-  number
-  sum
-  date
-  rows = []
+import DtoWithRows from "../../components/dto-with-rows.js";
+import RowDto from "./row-dto.js";
 
-  setData (model) {
-    this.id = model.id;
-    this.number = model.number;
-    this.sum = model.sum;
-    this.date = model.date;
-  }
-
-  setRows (rows) {
-    this.rows = rows;
-  }
+export default class Dto extends DtoWithRows {
+  id;
+  number;
+  sum;
+  date;
+  rowDto = RowDto;
 }
