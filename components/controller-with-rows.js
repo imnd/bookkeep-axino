@@ -13,15 +13,14 @@ export default class ControllerWithRows {
    * Get all items
    */
   async index() {
-    const models = await this.model.findAll();
+    const models = await this.model
+      .with('rows')
+      .findAll();
+
     const DTOs = [];
     for (let model of models) {
-      const rows = await this.#findRows(model.id);
-
       DTOs.push(
-        (new this.dto)
-          .setData(model)
-          .setRows(rows)
+        (new this.dto).setData(model)
       );
     }
 
@@ -32,12 +31,11 @@ export default class ControllerWithRows {
    * Get item by ID
    */
   async show(id) {
-    const model = await this.model.findOrFail(id);
-    const rows = await this.#findRows(id);
+    const model = await this.model
+      .with('rows')
+      .findOrFail(id);
 
-    return (new this.dto)
-      .setData(model)
-      .setRows(rows);
+    return (new this.dto).setData(model);
   }
 
   /**
@@ -47,9 +45,7 @@ export default class ControllerWithRows {
     const model = await this.model.create(data);
     const rows = await this.#createRows(data);
 
-    return (new this.dto)
-      .setData(model)
-      .setRows(rows);
+    return (new this.dto).setData(model, rows);
   }
 
   /**
@@ -63,9 +59,7 @@ export default class ControllerWithRows {
 
     const rows = await this.#createRows(data);
 
-    return (new this.dto)
-      .setData(model)
-      .setRows(rows);
+    return (new this.dto).setData(model, rows);
   }
 
   /**
@@ -76,16 +70,10 @@ export default class ControllerWithRows {
     await this.#deleteRows(id);
   }
 
-  async #findRows(id) {
-    return await this.rowModel.findAll({
-        [(new this.rowModel).parentKey]: id,
-    });
-  }
-
   async #createRows(data) {
     const rows = [];
     for (let row of data.rows) {
-      row[(new this.rowModel).parentKey] = id;
+      row[this.rowModel.parentKey] = id;
       rows.push(await this.rowModel.create(row))
     }
 
@@ -95,7 +83,7 @@ export default class ControllerWithRows {
   async #deleteRows(id) {
     await this.rowModel.delete({
       where: {
-        [(new this.rowModel).parentKey]: id,
+        [this.rowModel.parentKey]: id,
       },
     });
   }

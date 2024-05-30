@@ -1,5 +1,7 @@
 import Model from "@imndzy/axino/core/db/model.js";
 
 export default class ContractsRows extends Model {
-  parentKey = 'contract_id';
+  static parentKey = 'contract_id';
+
+  fields = ['contract_id', 'article_id', 'quantity', 'price'];
 }
